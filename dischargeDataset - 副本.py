@@ -77,28 +77,26 @@ device = torch.device("cuda")
 class CNNNet(nn.Module):
     def __init__(self):
         super(CNNNet, self).__init__()
-        self.conv1 = nn.Conv1d(3, 100, 10)
-        self.pool1 = nn.MaxPool1d(3)
-        self.conv2 = nn.Conv1d(100, 100, 10)
-        self.pool2 = nn.MaxPool1d(3)
-        self.conv3 = nn.Conv1d(100, 160, 10)
-        self.pool3 = nn.MaxPool1d(3)
-        self.conv4 = nn.Conv1d(160, 160, 10)
-        self.drop1 = nn.Dropout(p=0.5)
-        self.fc1 = nn.Linear(160*1, 48)
-        self.fc2 = nn.Linear(48, 32)
-        self.fc3 = nn.Linear(32, 5)
+        self.conv = nn.Sequential()
+        self.conv.add_module("conv1", nn.Conv1d(in_channels=3, out_channels=500, kernel_size=50))
+        self.conv.add_module("Relu1", nn.ReLU())
+        self.conv.add_module("conv2", nn.Conv1d(in_channels=500, out_channels=500, kernel_size=50))
+        self.conv.add_module("pool1", nn.MaxPool1d(3))
+        self.conv.add_module("conv3", nn.Conv1d(in_channels=500, out_channels=800, kernel_size=50))
+        self.conv.add_module("Relu2", nn.ReLU())
+        self.conv.add_module("conv4", nn.Conv1d(in_channels=800, out_channels=800, kernel_size=50))
+        self.conv.add_module("pool2", nn.AvgPool1d(2))
+        self.dense = nn.Sequential()
+        self.dense.add_module("dense1", nn.Linear(800, 360))
+        self.dense.add_module("Relu3", nn.ReLU())
+        self.dense.add_module("dense2", nn.Linear(360, 5))
     
     def forward(self, x):
-        x = self.pool1(F.relu(self.conv1(x)))
-        x = self.pool2(F.relu(self.conv2(x)))
-        x = self.pool3(F.relu(self.conv3(x)))
-        x = self.drop1(F.relu(self.conv4(x)))
-        x = x.view(-1, 160*1)
-        x = F.relu(self.fc1(x))
-        x = F.relu(self.fc2(x))
-        x = self.fc3(x)
-        return x
+        conv_out = self.conv(x)
+        res = conv_out.view(conv_out.size(0), -1)
+        out = self.dense(res)
+        return out
+        
 
 
 # In[8]:
@@ -144,6 +142,7 @@ for epoch in range(10):
         inputs = inputs.to(device)
         labels = tuple2tensor_char(labels)
         labels = labels.to(device)
+ 
         optimizier.zero_grad()
 
         outputs = net(inputs)
@@ -152,9 +151,9 @@ for epoch in range(10):
         optimizier.step()
 
         running_loss += loss.item()
-
-        print('[%d, %5d] loss: %.3f' %(epoch + 1, i + 1, running_loss / 2000))
-        running_loss = 0.0
+        if i % 2000 ==1999:
+            print('[%d, %5d] loss: %.3f' %(epoch + 1, i + 1, running_loss / 2000))
+            running_loss = 0.0
     
 print('finish')
 
