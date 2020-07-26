@@ -1,7 +1,7 @@
 import os
 
-dirPath = "d:\\Codes\\keyan\\peidian\\discharge"
-resultFile = "d:\\Codes\\keyan\\peidian\\csv_label_digit.txt"
+dirPath = "D:\\Codes\\keyan\\discharge"
+resultFile = "D:\\Codes\\keyan\\CONV\\csv_label_digit.txt"
 fresultFile = open(resultFile, 'w') # 打开文件
 
 csvLabel = os.listdir(dirPath) # 得到标签
