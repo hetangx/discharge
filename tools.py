@@ -2,7 +2,7 @@ import pandas as pd
 import numpy as np
 import matplotlib.pyplot as plt
 import seaborn as sns
-
+from sklearn import preprocessing
 # 先写测试脚本，然后封装为方法
 # 脚本1 - 分割数据集
 
@@ -82,3 +82,13 @@ def ZScoreNormalize(x, mx):
         _std = mx[1][i]
         ret[:, i] = (x[:, i] - _mean) / _std
     return ret
+
+def SK_Standard(x):
+    """
+    sklearn.preprocessing中的StandardScaler采用的标准差是有偏的
+    通过修改scaler的scale_参数，使之变为无偏估计
+    """
+    scale = preprocessing.StandardScaler()
+    scale.fit(x)
+    scale.scale_ = np.std(x, axis=0, ddof=1)
+    return scale.transform(x)
