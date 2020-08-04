@@ -3,8 +3,7 @@ import numpy as np
 import matplotlib.pyplot as plt
 import seaborn as sns
 from sklearn import preprocessing
-# 先写测试脚本，然后封装为方法
-# 脚本1 - 分割数据集
+
 
 # dataset_dir = os.path.join("..")
 
@@ -26,7 +25,7 @@ def plot3(data, title):
 # 2. Standardization(Z-score normalization)
 def LinkData(filepath): # 拼接数据
     """
-    从filepath中读取csv文件，拼接，返回dataframe.values
+    从filepath中读取csv文件，拼接，返回dataframe.values(即ndarray)
     """
     csvs = []
     fh = open(filepath, 'r')
@@ -92,3 +91,36 @@ def SK_Standard(x):
     scale.fit(x)
     scale.scale_ = np.std(x, axis=0, ddof=1)
     return scale.transform(x)
+
+def SK_scaler(data_l):
+    """
+    读取data_l(ndarray), 返回两个预处理器：
+    1. min max scaler
+    2. standard scaler
+    """
+    # 归一化
+    s_mms = preprocessing.MinMaxScaler()
+    s_mms.fit(data_l)
+    # 标准化
+    data_temp = s_mms.transform(data_l)
+    s_std = preprocessing.StandardScaler()
+    s_std.fit(data_temp)
+    s_std.scale_ = np.std(data_temp, axis=0, ddof=1)
+
+    return s_mms, s_std
+
+def DataTrans(x, s_mms, s_std):
+    """
+    归一化、标准化变换
+    x: ndarray
+    s_mms: min max scaler
+    s_std: standard scaler
+    """
+    return s_std.transform(s_mms.transform(x))
+
+# 杂项 - 记录网上找的各种方法
+def print_object_attr(obj):
+    """
+    打印对象的所有属性
+    """
+    print('\n'.join(['%s:%s' % item for item in obj.__dict__.items()]))
