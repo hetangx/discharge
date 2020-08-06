@@ -13,4 +13,4 @@ for i in range(5):
     for root, dirs, files in gDirPath:
         for f in files:
             # f.write(labelDirPath + "\\" + f + ' ' + csvLabel[i] + '\n') 
-            f.write(labelDirPath + "\\" + f + ' ' + str(i) + '\n') 
+            f.write(labelDirPath + "\\" + f + ' ' + str(i) + '\n')

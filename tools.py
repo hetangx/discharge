@@ -5,7 +5,43 @@ import seaborn as sns
 from sklearn import preprocessing
 
 
-# dataset_dir = os.path.join("..")
+def file_route_win(dirPath, resultFile):
+    import os
+    """
+    扫描data文件夹下各种放电类型的csv文件，并保存路径与类型至txt文件
+    """
+    # dirPath = "D:\\Codes\\keyan\\discharge"
+    # resultFile = "D:\\Codes\\keyan\\CONV\\csv_label_digit.txt"
+    file = open(resultFile, 'w') # 打开文件
+
+    csvLabel = os.listdir(dirPath) # 得到标签
+    for i in range(5):
+        labelDirPath = dirPath + "\\" + csvLabel[i]
+        gDirPath = os.walk(labelDirPath) # 文件名迭代器
+
+        for root, dirs, files in gDirPath:
+            for f in files:
+                # file.write(labelDirPath + "\\" + f + ' ' + csvLabel[i] + '\n') 
+                file.write(labelDirPath + "\\" + f + ' ' + str(i) + '\n')
+
+def file_route_linux(dirPath, resultFile):
+    import os
+    """
+    扫描data文件夹下各种放电类型的csv文件，并保存路径与类型至txt文件
+    dirPath末尾不要加'/'
+    resultFile为保存的txt文件名，默认保存在当前路径下
+    """
+    file = open(resultFile, 'w') # 打开文件
+
+    csvLabel = os.listdir(dirPath) # 得到标签
+    for i in range(5):
+        labelDirPath = dirPath + "/" + csvLabel[i]
+        gDirPath = os.walk(labelDirPath) # 文件名迭代器
+
+        for root, dirs, files in gDirPath:
+            for f in files:
+                # file.write(labelDirPath + "\\" + f + ' ' + csvLabel[i] + '\n') 
+                file.write(labelDirPath + "/" + f + ' ' + str(i) + '\n')
 
 # 显示数据
 
