@@ -3,6 +3,7 @@ import numpy as np
 import matplotlib.pyplot as plt
 import seaborn as sns
 from sklearn import preprocessing
+import sklearn
 
 
 def file_route_win(dirPath, resultFile):
@@ -154,9 +155,48 @@ def DataTrans(x, s_mms, s_std):
     """
     return s_std.transform(s_mms.transform(x))
 
+
 # 杂项 - 记录网上找的各种方法
 def print_object_attr(obj):
     """
     打印对象的所有属性
     """
     print('\n'.join(['%s:%s' % item for item in obj.__dict__.items()]))
+
+def tuple2tensor_char(x):
+    """
+    将tuple 转换为 tensor
+    """
+    return torch.tensor(list(map(int, x)))
+
+# 数据预处理器类
+# 封装至class里，方便使用
+# 过度封装，暂时废弃
+class DataPreProcessing():
+    def __init__(self, MinMax=1, Stand=1, extra_scaler=None):
+        self.MinMax = MinMax
+        self.Stand = Stand
+        self.extra_scaler = extra_scaler
+    
+    def fit(self, data):
+        self.data = data
+
+
+    def fit_transform(self, data):
+        self.data = data
+        if(self.MinMax == 1):
+            sk_mms = preprocessing.MinMaxScaler()
+            sk_mms.fit(self.data)
+            self.data = sk_mms.transform(self.data)
+
+        if(self.Stand == 1):
+            sk_std = preprocessing.StandardScaler()
+            sk_std.fit(self.data)
+            sk_std.scale_ = np.std(self.data, axis=0, ddof=1)
+            self.data = sk_std.transform(self.data)
+        
+        if(self.extra_scaler != None):
+            for scale in self.extra_scaler:
+                self.data = scale.transform(self.data)
+        
+        return self.data
